@@ -4,7 +4,7 @@ package net.duck8823;
  * Created by maeda on 2016/01/09.
  */
 @GenerateNames
-public class Hoge {
+public class Hoge extends AbstractHoge {
 
 	private String hoge;
 
