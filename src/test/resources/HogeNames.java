@@ -9,6 +9,19 @@ import javax.annotation.Generated;
  */
 @Generated("net.duck8823.GenerateNamesProcessor")
 public class HogeNames {
-	public final String hoge = "hoge";
-	public final String abstractHoge = "abstractHoge";
+	/**
+	 * abstractHogeのフィールド名を取得します.
+	 * @return abstractHogeのフィールド名
+	 */
+	public final String abstractHoge() {
+		return "abstractHoge";
+	}
+
+	/**
+	 * hogeのフィールド名を取得します.
+	 * @return hogeのフィールド名
+	 */
+	public final String hoge() {
+		return "hoge";
+	}
 }
