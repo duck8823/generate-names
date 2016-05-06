@@ -10,4 +10,5 @@ import javax.annotation.Generated;
 @Generated("net.duck8823.GenerateNamesProcessor")
 public class HogeNames {
 	public final String hoge = "hoge";
+	public final String abstractHoge = "abstractHoge";
 }
