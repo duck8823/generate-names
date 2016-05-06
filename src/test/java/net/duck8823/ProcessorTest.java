@@ -18,6 +18,9 @@ public class ProcessorTest {
 		Truth.assert_().about(JavaSourceSubjectFactory.javaSource())
 				.that(JavaFileObjects.forResource(Resources.getResource("Hoge.java")))
 				.processedWith(new GenerateNamesProcessor())
-				.compilesWithoutError();
+				.compilesWithoutError()
+				.and()
+				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeNames.java")));
+		;
 	}
 }
