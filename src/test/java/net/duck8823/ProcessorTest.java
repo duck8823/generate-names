@@ -14,13 +14,32 @@ import org.junit.Test;
 public class ProcessorTest {
 
 	@Test
-	public void test() {
+	public void 正しく名前クラスが生成される() {
 		Truth.assert_().about(JavaSourceSubjectFactory.javaSource())
 				.that(JavaFileObjects.forResource(Resources.getResource("Hoge.java")))
 				.processedWith(new GenerateNamesProcessor())
 				.compilesWithoutError()
 				.and()
 				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeNames.java")));
-		;
+	}
+
+	@Test
+	public void スーパークラスのフィールドを取得しない() {
+		Truth.assert_().about(JavaSourceSubjectFactory.javaSource())
+				.that(JavaFileObjects.forResource(Resources.getResource("HogeWithoutSuperclass.java")))
+				.processedWith(new GenerateNamesProcessor())
+				.compilesWithoutError()
+				.and()
+				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeWithoutSuperclassNames.java")));
+	}
+
+	@Test
+	public void 接尾辞を変更する() {
+		Truth.assert_().about(JavaSourceSubjectFactory.javaSource())
+				.that(JavaFileObjects.forResource(Resources.getResource("HogeChangingSuffix.java")))
+				.processedWith(new GenerateNamesProcessor())
+				.compilesWithoutError()
+				.and()
+				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeChangingSuffixMeta.java")));
 	}
 }
