@@ -32,4 +32,14 @@ public class ProcessorTest {
 				.and()
 				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeWithoutSuperclassNames.java")));
 	}
+
+	@Test
+	public void 接尾辞を変更する() {
+		Truth.assert_().about(JavaSourceSubjectFactory.javaSource())
+				.that(JavaFileObjects.forResource(Resources.getResource("HogeChangingSuffix.java")))
+				.processedWith(new GenerateNamesProcessor())
+				.compilesWithoutError()
+				.and()
+				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeChangingSuffixMeta.java")));
+	}
 }

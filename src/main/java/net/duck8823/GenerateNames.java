@@ -12,6 +12,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 public @interface GenerateNames {
+
+	/**
+	 * 生成されるクラスの接尾辞<br/>
+	 * デフォルト: Names
+	 */
+	String suffix() default "Names";
+
 	/**
 	 * スーパークラスを対象にするかどうか
 	 */
