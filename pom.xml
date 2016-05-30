@@ -32,7 +32,7 @@
 				<repository>
 					<id>local</id>
 					<name>local</name>
-					<url>file://var/mvn/repo</url>
+					<url>file://localhost/var/mvn/repo</url>
 				</repository>
 			</distributionManagement>
 		</profile>
