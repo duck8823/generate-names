@@ -3,7 +3,7 @@ package net.duck8823;
 
 import com.google.auto.common.MoreElements;
 import com.squareup.javapoet.*;
-import com.sun.tools.javac.util.StringUtils;
+import org.springframework.util.Assert;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.AbstractProcessor;
@@ -15,6 +15,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+import javax.persistence.*;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
@@ -35,6 +38,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 		for(final Element element : elements){
 			final PackageElement packageElement = MoreElements.getPackage(element);
 			final GenerateNames generateNames = element.getAnnotation(GenerateNames.class);
+			final boolean isEntity = element.getAnnotation(Entity.class) != null;
 			TypeSpec.Builder builder = TypeSpec.classBuilder(element.getSimpleName().toString() + generateNames.suffix());
 			AnnotationSpec generated = AnnotationSpec.builder(Generated.class)
 													 .addMember("value", "$S", "net.duck8823.GenerateNamesProcessor")
@@ -46,7 +50,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 				   .addJavadoc("@see https://github.com/duck8823/generate-names\n");
 
 			if(generateNames.createFields()) {
-				builder.addFields(createFields(element, generateNames));
+				builder.addFields(createFields(element, generateNames, isEntity));
 			}
 			if(generateNames.createMethods()) {
 				builder.addMethods(createMethods(element, generateNames));
@@ -71,8 +75,41 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 	 * {@param element}内のフィールドを取得する
 	 * @param element クラス要素
 	 */
-	private Set<FieldSpec> createFields(Element element, GenerateNames generateNames) {
-		return createFields(element, generateNames, new HashSet<>());
+	private Set<FieldSpec> createFields(Element element, GenerateNames generateNames, boolean isEntity) {
+		return createFields(element, generateNames, isEntity, new HashSet<>());
+	}
+
+	private Set<FieldSpec> createEntityRelatedFields(Element element, HashSet<String> contains) {
+		Assert.notNull(element);
+		Set<FieldSpec> fieldSpecs = new HashSet<>();
+		final TypeElement typeElement = (TypeElement) element;
+ 			typeElement.getEnclosedElements().stream()
+					.filter(o -> o.getKind().isField())
+					.filter(o -> !contains.contains(o.toString()))
+					.forEach( o -> {
+						FieldSpec fieldSpec = FieldSpec.builder(String.class, o.toString().replaceAll("([a-z])([A-Z]+)", "$1_$2").toUpperCase())
+							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+							.initializer("$S", o.toString())
+							.addJavadoc("$Lのフィールド名\n", o.toString())
+							.build();
+						fieldSpecs.add(fieldSpec);
+
+						Element child = processingEnv.getTypeUtils().asElement(o.asType());
+						if(o.getAnnotation(Embedded.class) != null ||
+						   o.getAnnotation(ManyToOne.class) != null ||
+						   o.getAnnotation(OneToOne.class) != null) {
+
+							fieldSpecs.addAll(createEntityRelatedFields(child, contains));
+						} else if(o.getAnnotation(ManyToMany.class) != null ||
+								  o.getAnnotation(OneToMany.class) != null) {
+
+							if(o.asType() instanceof DeclaredType) {
+								TypeMirror type = DeclaredType.class.cast(o.asType()).getTypeArguments().get(0);
+								fieldSpecs.addAll(createEntityRelatedFields(processingEnv.getTypeUtils().asElement(type), contains));
+							}
+						}
+			});
+		return fieldSpecs;
 	}
 
 	/**
@@ -80,7 +117,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 	 * @param element クラス要素
 	 * @param contains 既に含まれる要素名のセット
 	 */
-	private Set<FieldSpec> createFields(Element element, GenerateNames generateNames, HashSet<String> contains) {
+	private Set<FieldSpec> createFields(Element element, GenerateNames generateNames, boolean isEntity, HashSet<String> contains) {
 		Set<FieldSpec> fieldSpecs = new HashSet<>();
 		final TypeElement typeElement = (TypeElement) element;
 		typeElement.getEnclosedElements().stream().filter(o -> o.getKind().isField()).filter(o -> !contains.contains(o.toString())).forEach( o -> {
@@ -91,9 +128,13 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 					.build();
 			fieldSpecs.add(fieldSpec);
 		});
+
 		Element superclassElement = processingEnv.getTypeUtils().asElement(typeElement.getSuperclass());
+		if(isEntity){
+			fieldSpecs.addAll(createEntityRelatedFields(element, contains));
+		}
 		if(generateNames.findSuperclass() && superclassElement != null) {
-			fieldSpecs.addAll(createFields(superclassElement, generateNames, contains));
+			fieldSpecs.addAll(createFields(superclassElement, generateNames, isEntity, contains));
 		}
 		return fieldSpecs;
 	}
