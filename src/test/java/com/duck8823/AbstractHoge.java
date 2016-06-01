@@ -1,4 +1,4 @@
-package net.duck8823;
+package com.duck8823;
 
 /**
  * Created by maeda on 2016/05/07.
