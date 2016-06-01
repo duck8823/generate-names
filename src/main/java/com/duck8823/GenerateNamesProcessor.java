@@ -1,4 +1,4 @@
-package net.duck8823;
+package com.duck8823;
 
 
 import com.google.auto.common.MoreElements;
@@ -42,7 +42,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 			final boolean isEntity = element.getAnnotation(Entity.class) != null;
 			TypeSpec.Builder builder = TypeSpec.classBuilder(element.getSimpleName().toString() + generateNames.suffix());
 			AnnotationSpec generated = AnnotationSpec.builder(Generated.class)
-													 .addMember("value", "$S", "net.duck8823.GenerateNamesProcessor")
+													 .addMember("value", "$S", "GenerateNamesProcessor")
 													 .build();
 
 			builder.addAnnotation(generated)

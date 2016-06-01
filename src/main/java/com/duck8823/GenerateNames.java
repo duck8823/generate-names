@@ -1,4 +1,4 @@
-package net.duck8823;
+package com.duck8823;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

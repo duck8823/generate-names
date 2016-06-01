@@ -1,4 +1,4 @@
-package net.duck8823;
+package com.duck8823;
 
 import javax.persistence.Embeddable;
 
