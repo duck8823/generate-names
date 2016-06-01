@@ -4,6 +4,7 @@ package net.duck8823;
 import com.google.auto.common.MoreElements;
 import com.squareup.javapoet.*;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.AbstractProcessor;
@@ -79,7 +80,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 		return createFields(element, generateNames, isEntity, new HashSet<>());
 	}
 
-	private Set<FieldSpec> createEntityRelatedFields(Element element, HashSet<String> contains) {
+	private Set<FieldSpec> createEntityRelatedFields(Element element, HashSet<String> contains, String base) {
 		Assert.notNull(element);
 		Set<FieldSpec> fieldSpecs = new HashSet<>();
 		final TypeElement typeElement = (TypeElement) element;
@@ -87,25 +88,27 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 					.filter(o -> o.getKind().isField())
 					.filter(o -> !contains.contains(o.toString()))
 					.forEach( o -> {
-						FieldSpec fieldSpec = FieldSpec.builder(String.class, o.toString().replaceAll("([a-z])([A-Z]+)", "$1_$2").toUpperCase())
+						String fieldName = o.toString();
+						fieldName = StringUtils.isEmpty(base) ? fieldName : base + "." + fieldName;
+						String name = fieldName.replaceAll("\\.","_").replaceAll("([a-z])([A-Z]+)", "$1_$2").toUpperCase();
+						FieldSpec fieldSpec = FieldSpec.builder(String.class, name)
 							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-							.initializer("$S", o.toString())
-							.addJavadoc("$Lのフィールド名\n", o.toString())
+							.initializer("$S", fieldName)
+							.addJavadoc("$Lのフィールド名\n", fieldName)
 							.build();
 						fieldSpecs.add(fieldSpec);
 
-						Element child = processingEnv.getTypeUtils().asElement(o.asType());
 						if(o.getAnnotation(Embedded.class) != null ||
 						   o.getAnnotation(ManyToOne.class) != null ||
 						   o.getAnnotation(OneToOne.class) != null) {
 
-							fieldSpecs.addAll(createEntityRelatedFields(child, contains));
+							fieldSpecs.addAll(createEntityRelatedFields(processingEnv.getTypeUtils().asElement(o.asType()), contains, fieldName));
 						} else if(o.getAnnotation(ManyToMany.class) != null ||
 								  o.getAnnotation(OneToMany.class) != null) {
 
 							if(o.asType() instanceof DeclaredType) {
 								TypeMirror type = DeclaredType.class.cast(o.asType()).getTypeArguments().get(0);
-								fieldSpecs.addAll(createEntityRelatedFields(processingEnv.getTypeUtils().asElement(type), contains));
+								fieldSpecs.addAll(createEntityRelatedFields(processingEnv.getTypeUtils().asElement(type), contains, fieldName));
 							}
 						}
 			});
@@ -131,7 +134,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 
 		Element superclassElement = processingEnv.getTypeUtils().asElement(typeElement.getSuperclass());
 		if(isEntity){
-			fieldSpecs.addAll(createEntityRelatedFields(element, contains));
+			fieldSpecs.addAll(createEntityRelatedFields(element, contains, ""));
 		}
 		if(generateNames.findSuperclass() && superclassElement != null) {
 			fieldSpecs.addAll(createFields(superclassElement, generateNames, isEntity, contains));

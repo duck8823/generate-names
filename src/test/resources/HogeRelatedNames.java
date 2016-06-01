@@ -25,24 +25,14 @@ public class HogeRelatedNames {
 	public static final String HOGE_MANY_TO_MANY = "hogeManyToMany";
 
 	/**
-	 * oneToOneElemのフィールド名
+	 * hogeManyToOne.manyToOneElemのフィールド名
 	 */
-	public static final String ONE_TO_ONE_ELEM = "oneToOneElem";
-
-	/**
-	 * embeddableElemのフィールド名
-	 */
-	public static final String EMBEDDABLE_ELEM = "embeddableElem";
+	public static final String HOGE_MANY_TO_ONE_MANY_TO_ONE_ELEM = "hogeManyToOne.manyToOneElem";
 
 	/**
 	 * hogeManyToOneのフィールド名
 	 */
 	public static final String HOGE_MANY_TO_ONE = "hogeManyToOne";
-
-	/**
-	 * oneToManyElemのフィールド名
-	 */
-	public static final String ONE_TO_MANY_ELEM = "oneToManyElem";
 
 	/**
 	 * abstractHogeのフィールド名
@@ -55,9 +45,9 @@ public class HogeRelatedNames {
 	public static final String HOGE_ONE_TO_ONE = "hogeOneToOne";
 
 	/**
-	 * manyToOneElemのフィールド名
+	 * hogeOneToOne.oneToOneElemのフィールド名
 	 */
-	public static final String MANY_TO_ONE_ELEM = "manyToOneElem";
+	public static final String HOGE_ONE_TO_ONE_ONE_TO_ONE_ELEM = "hogeOneToOne.oneToOneElem";
 
 	/**
 	 * hogeのフィールド名
@@ -65,7 +55,17 @@ public class HogeRelatedNames {
 	public static final String HOGE = "hoge";
 
 	/**
-	 * manyToManyElemのフィールド名
+	 * hogeOneToMany.oneToManyElemのフィールド名
 	 */
-	public static final String MANY_TO_MANY_ELEM = "manyToManyElem";
+	public static final String HOGE_ONE_TO_MANY_ONE_TO_MANY_ELEM = "hogeOneToMany.oneToManyElem";
+
+	/**
+	 * hogeManyToMany.manyToManyElemのフィールド名
+	 */
+	public static final String HOGE_MANY_TO_MANY_MANY_TO_MANY_ELEM = "hogeManyToMany.manyToManyElem";
+
+	/**
+	 * hogeEmbeddable.embeddableElemのフィールド名
+	 */
+	public static final String HOGE_EMBEDDABLE_EMBEDDABLE_ELEM = "hogeEmbeddable.embeddableElem";
 }
