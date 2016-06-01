@@ -23,4 +23,14 @@ public @interface GenerateNames {
 	 * スーパークラスを対象にするかどうか
 	 */
 	boolean findSuperclass() default true;
+
+	/**
+	 * メソッドを作成するか
+	 */
+	boolean createMethods() default true;
+
+	/**
+	 * フィールドを作成するか
+	 */
+	boolean createFields() default false;
 }

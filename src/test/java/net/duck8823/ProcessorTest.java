@@ -42,4 +42,24 @@ public class ProcessorTest {
 				.and()
 				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeChangingSuffixMeta.java")));
 	}
+
+	@Test
+	public void フィールドを作成する() {
+		Truth.assert_().about(JavaSourceSubjectFactory.javaSource())
+				.that(JavaFileObjects.forResource(Resources.getResource("HogeCreateFields.java")))
+				.processedWith(new GenerateNamesProcessor())
+				.compilesWithoutError()
+				.and()
+				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeCreateFieldsNames.java")));
+	}
+
+	@Test
+	public void エンティティの名前クラスを生成する() {
+		Truth.assert_().about(JavaSourceSubjectFactory.javaSource())
+				.that(JavaFileObjects.forResource(Resources.getResource("HogeRelated.java")))
+				.processedWith(new GenerateNamesProcessor())
+				.compilesWithoutError()
+				.and()
+				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeRelatedNames.java")));
+	}
 }
