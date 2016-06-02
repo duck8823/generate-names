@@ -48,13 +48,11 @@
 			<groupId>com.google.auto</groupId>
 			<artifactId>auto-common</artifactId>
 			<version>0.6</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup</groupId>
 			<artifactId>javapoet</artifactId>
 			<version>1.7.0</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
