@@ -6,7 +6,7 @@
 
 	<groupId>com.duck8823.generate-names</groupId>
 	<artifactId>generate-names</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 
 	<build>
 		<plugins>
