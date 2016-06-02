@@ -169,3 +169,5 @@ public class HogeRelatedNames {
 	public static final String HOGE_EMBEDDABLE_EMBEDDABLE_ELEM = "hogeEmbeddable.embeddableElem";
 }
 ```
+  
+  
