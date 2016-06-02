@@ -6,7 +6,7 @@
 
 	<groupId>com.duck8823.generate-names</groupId>
 	<artifactId>generate-names</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 	<build>
 		<plugins>
@@ -21,6 +21,11 @@
 					<!-- disable annotation processing -->
 					<compilerArgument>-proc:none</compilerArgument>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.6.201602180812</version>
 			</plugin>
 		</plugins>
 	</build>

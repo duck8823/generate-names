@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by maeda on 2016/01/09.
  */
-@GenerateNames(createMethods = false, createFields = true)
+@GenerateNames(createAsMethods = false, createAsFields = true)
 @Entity
 public class HogeRelated extends AbstractHoge {
 
