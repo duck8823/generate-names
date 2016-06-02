@@ -6,7 +6,7 @@ import com.duck8823.GenerateNames;
 /**
  * Created by maeda on 2016/01/09.
  */
-@GenerateNames(suffix = "Meta")
+@GenerateNames(suffix = "Meta", createAsMethods = true, createAsFields = false)
 public class HogeChangingSuffix extends AbstractHoge {
 
 	private String hoge;

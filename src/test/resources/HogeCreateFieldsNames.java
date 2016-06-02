@@ -20,19 +20,4 @@ public class HogeCreateFieldsNames {
 	 */
 	public static final String HOGE = "hoge"
 
-	/**
-	 * abstractHogeのフィールド名を取得します.
-	 * @return abstractHogeのフィールド名
-	 */
-	public final String abstractHoge() {
-		return "abstractHoge";
-	}
-
-	/**
-	 * hogeのフィールド名を取得します.
-	 * @return hogeのフィールド名
-	 */
-	public final String hoge() {
-		return "hoge";
-	}
 }

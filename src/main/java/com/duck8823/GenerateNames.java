@@ -25,12 +25,12 @@ public @interface GenerateNames {
 	boolean findSuperclass() default true;
 
 	/**
-	 * メソッドを作成するか
+	 * メソッドで作成するか
 	 */
-	boolean createMethods() default true;
+	boolean createAsMethods() default false;
 
 	/**
-	 * フィールドを作成するか
+	 * フィールドで作成するか
 	 */
-	boolean createFields() default false;
+	boolean createAsFields() default true;
 }

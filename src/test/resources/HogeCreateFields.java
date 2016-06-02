@@ -6,7 +6,7 @@ import com.duck8823.GenerateNames;
 /**
  * Created by maeda on 2016/01/09.
  */
-@GenerateNames(createFields = true)
+@GenerateNames
 public class HogeCreateFields extends AbstractHoge {
 
 	private String hoge;

@@ -6,7 +6,7 @@ import com.duck8823.GenerateNames;
 /**
  * Created by maeda on 2016/01/09.
  */
-@GenerateNames(findSuperclass = false)
+@GenerateNames(findSuperclass = false, createAsMethods = true, createAsFields = false)
 public class HogeWithoutSuperclass extends AbstractHoge {
 
 	private String hoge;
