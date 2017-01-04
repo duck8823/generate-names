@@ -39,7 +39,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 		for(final Element element : elements){
 			final PackageElement packageElement = MoreElements.getPackage(element);
 			final GenerateNames generateNames = element.getAnnotation(GenerateNames.class);
-			final boolean isEntity = element.getAnnotation(Entity.class) != null;
+			final boolean isModel = element.getAnnotation(Entity.class) != null || element.getAnnotation(Embeddable.class) != null;
 			TypeSpec.Builder builder = TypeSpec.classBuilder(element.getSimpleName().toString() + generateNames.suffix());
 			AnnotationSpec generated = AnnotationSpec.builder(Generated.class)
 													 .addMember("value", "$S", "GenerateNamesProcessor")
@@ -51,7 +51,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 				   .addJavadoc("@see https://github.com/duck8823/generate-names\n");
 
 			if(generateNames.createAsFields()) {
-				builder.addFields(createFields(element, generateNames, isEntity));
+				builder.addFields(createFields(element, generateNames, isModel));
 			}
 			if(generateNames.createAsMethods()) {
 				builder.addMethods(createMethods(element, generateNames));
@@ -76,11 +76,11 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 	 * {@param element}内のフィールドを取得する
 	 * @param element クラス要素
 	 */
-	private Set<FieldSpec> createFields(Element element, GenerateNames generateNames, boolean isEntity) {
-		return createFields(element, generateNames, isEntity, new HashSet<>());
+	private Set<FieldSpec> createFields(Element element, GenerateNames generateNames, boolean isModel) {
+		return createFields(element, generateNames, isModel, new HashSet<>());
 	}
 
-	private Set<FieldSpec> createEntityRelatedFields(Element element, HashSet<String> contains, String base) {
+	private Set<FieldSpec> createModelRelatedFields(Element element, HashSet<String> contains, String base) {
 		Assert.notNull(element);
 		Set<FieldSpec> fieldSpecs = new HashSet<>();
 		final TypeElement typeElement = (TypeElement) element;
@@ -107,15 +107,16 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 			}
 
 			if (enclosedElem.getAnnotation(Embedded.class) != null ||
+				enclosedElem.getAnnotation(EmbeddedId.class) != null ||
 				enclosedElem.getAnnotation(ManyToOne.class) != null ||
 				enclosedElem.getAnnotation(OneToOne.class) != null) {
 
-				fieldSpecs.addAll(createEntityRelatedFields(processingEnv.getTypeUtils().asElement(enclosedElem.asType()), contains, fieldName));
+				fieldSpecs.addAll(createModelRelatedFields(processingEnv.getTypeUtils().asElement(enclosedElem.asType()), contains, fieldName));
 			} else if (enclosedElem.getAnnotation(ManyToMany.class) != null ||
 					enclosedElem.getAnnotation(OneToMany.class) != null) {
 				if (enclosedElem.asType() instanceof DeclaredType) {
 					TypeMirror type = DeclaredType.class.cast(enclosedElem.asType()).getTypeArguments().get(0);
-					fieldSpecs.addAll(createEntityRelatedFields(processingEnv.getTypeUtils().asElement(type), contains, fieldName));
+					fieldSpecs.addAll(createModelRelatedFields(processingEnv.getTypeUtils().asElement(type), contains, fieldName));
 				}
 			}
 		}
@@ -127,7 +128,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 	 * @param element クラス要素
 	 * @param contains 既に含まれる要素名のセット
 	 */
-	private Set<FieldSpec> createFields(Element element, GenerateNames generateNames, boolean isEntity, HashSet<String> contains) {
+	private Set<FieldSpec> createFields(Element element, GenerateNames generateNames, boolean isModel, HashSet<String> contains) {
 		Set<FieldSpec> fieldSpecs = new HashSet<>();
 		final TypeElement typeElement = (TypeElement) element;
 		typeElement.getEnclosedElements().stream().filter(o -> o.getKind().isField()).filter(o -> !contains.contains(o.toString())).forEach( o -> {
@@ -139,13 +140,13 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 			fieldSpecs.add(fieldSpec);
 		});
 
-		if(isEntity){
-			fieldSpecs.addAll(createEntityRelatedFields(element, contains, ""));
+		if(isModel){
+			fieldSpecs.addAll(createModelRelatedFields(element, contains, ""));
 		}
 
 		Element superclassElement = processingEnv.getTypeUtils().asElement(typeElement.getSuperclass());
 		if(generateNames.findSuperclass() && superclassElement != null) {
-			fieldSpecs.addAll(createFields(superclassElement, generateNames, isEntity, contains));
+			fieldSpecs.addAll(createFields(superclassElement, generateNames, isModel, contains));
 		}
 		return fieldSpecs;
 	}
