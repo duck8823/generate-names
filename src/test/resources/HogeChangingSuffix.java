@@ -1,7 +1,4 @@
-package com.duck8823;
-
-import com.duck8823.AbstractHoge;
-import com.duck8823.GenerateNames;
+package com.github.duck8823;
 
 /**
  * Created by maeda on 2016/01/09.

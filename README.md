@@ -1,10 +1,12 @@
 # generate-names
+[![](https://jitpack.io/v/duck8823/generate-names.svg)](https://jitpack.io/#duck8823/generate-names)
+
 `@GenerateNames`アノテーションがついたクラスに対して、名前クラスを生成する。
 
 ## Usage
 クラスに`@GenerateNames`をつける  
 ```java  
-package com.duck8823;
+package com.github.duck8823;
 
 @GenerateNames
 public class Hoge extends AbstractHoge {
@@ -21,7 +23,7 @@ public class Hoge extends AbstractHoge {
   
 生成されるクラス  
 ```java  
-package com.duck8823;
+package com.github.duck8823;
 
 import java.lang.String;
 import javax.annotation.Generated;
@@ -60,9 +62,9 @@ public class HogeNames {
     
 もととなるクラス  
 ```java
-package com.duck8823;
+package com.github.duck8823;
 
-import com.duck8823.*;
+import com.github.duck8823.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -97,7 +99,7 @@ public class HogeRelated extends AbstractHoge {
   
 生成されるクラス  
 ```java
-package com.duck8823;
+package com.github.duck8823;
 
 import java.lang.String;
 import javax.annotation.Generated;
@@ -169,5 +171,4 @@ public class HogeRelatedNames {
 	public static final String HOGE_EMBEDDABLE_EMBEDDABLE_ELEM = "hogeEmbeddable.embeddableElem";
 }
 ```
-  
   

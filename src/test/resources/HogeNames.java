@@ -1,4 +1,4 @@
-package com.duck8823;
+package com.github.duck8823;
 
 import java.lang.String;
 import javax.annotation.Generated;

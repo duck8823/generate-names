@@ -1,6 +1,4 @@
-package com.duck8823;
-
-import com.duck8823.*;
+package com.github.duck8823;
 
 import javax.persistence.*;
 import java.util.List;
