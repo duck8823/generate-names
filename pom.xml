@@ -30,19 +30,6 @@
 		</plugins>
 	</build>
 
-	<profiles>
-		<profile>
-			<id>local</id>
-			<distributionManagement>
-				<repository>
-					<id>local</id>
-					<name>local</name>
-					<url>file://localhost/var/mvn/repo</url>
-				</repository>
-			</distributionManagement>
-		</profile>
-	</profiles>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.google.auto</groupId>
