@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-@GenerateNames(findMethods = true)
+@GenerateNames(findMethods = true, findSuperclass = false)
 class SampleTest {
 
 	@ParameterizedTest
