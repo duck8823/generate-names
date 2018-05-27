@@ -2,9 +2,8 @@ package com.github.duck8823;
 
 
 import com.google.auto.common.MoreElements;
+import com.google.common.base.Strings;
 import com.squareup.javapoet.*;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.AbstractProcessor;
@@ -79,7 +78,9 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 	}
 
 	private Set<FieldSpec> createModelRelatedFields(Element element, HashSet<String> contains, String base) {
-		Assert.notNull(element);
+		if (element == null) {
+			throw new IllegalArgumentException("element is null");
+		}
 		Set<FieldSpec> fieldSpecs = new HashSet<>();
 		final TypeElement typeElement = (TypeElement) element;
 		for(Element enclosedElem : typeElement.getEnclosedElements()) {
@@ -90,7 +91,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 				continue;
 			}
 			String fieldName = enclosedElem.toString();
-			fieldName = StringUtils.isEmpty(base) ? fieldName : base + "." + fieldName;
+			fieldName = Strings.isNullOrEmpty(base) ? fieldName : base + "." + fieldName;
 			String name = fieldName.replaceAll("\\.", "_").replaceAll("([a-z])([A-Z]+)", "$1_$2").toUpperCase();
 			FieldSpec fieldSpec = FieldSpec.builder(String.class, name)
 									.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
@@ -99,7 +100,7 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 									.build();
 			fieldSpecs.add(fieldSpec);
 
-			if(!StringUtils.isEmpty(base) && typeElement.getAnnotation(Entity.class) != null){
+			if(!Strings.isNullOrEmpty(base) && typeElement.getAnnotation(Entity.class) != null){
 				// 循環参照を防ぐため、2回目以降エンティティの場合は以降の要素は取得しない
 				continue;
 			}
