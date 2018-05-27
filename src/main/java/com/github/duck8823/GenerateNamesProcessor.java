@@ -12,18 +12,14 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.persistence.*;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * アノテーションプロセッサの実装
@@ -32,6 +28,8 @@ import java.util.Set;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("*")
 public class GenerateNamesProcessor extends AbstractProcessor {
+
+	private final List<String> CONSTRUCTOR_NAMES = Arrays.asList("<init>", "<clinit>");
 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -131,14 +129,29 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 	private Set<FieldSpec> createFields(Element element, GenerateNames generateNames, boolean isModel, HashSet<String> contains) {
 		Set<FieldSpec> fieldSpecs = new HashSet<>();
 		final TypeElement typeElement = (TypeElement) element;
-		typeElement.getEnclosedElements().stream().filter(o -> o.getKind().isField()).filter(o -> !contains.contains(o.toString())).forEach( o -> {
-			FieldSpec fieldSpec = FieldSpec.builder(String.class, o.toString().replaceAll("([a-z])([A-Z]+)", "$1_$2").toUpperCase())
-					.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-					.initializer("$S", o.toString())
-					.addJavadoc("$Lのフィールド名\n", o.toString())
-					.build();
-			fieldSpecs.add(fieldSpec);
-		});
+		typeElement.getEnclosedElements().stream()
+				.filter(o -> {
+					if (o.getKind().isField()) return true;
+					return generateNames.findMethods() &&
+							o instanceof ExecutableElement &&
+							((ExecutableElement) o).getParameters().isEmpty() &&
+							!CONSTRUCTOR_NAMES.contains(o.getSimpleName().toString());
+				})
+				.filter(o -> !contains.contains(o.toString()))
+				.forEach( o -> {
+					String fieldName = o.getSimpleName().toString()
+							.replaceAll("([a-z])([A-Z]+)", "$1_$2");
+					String type = "フィールド";
+					if (o instanceof ExecutableElement) {
+						type = "メソッド";
+					}
+					FieldSpec fieldSpec = FieldSpec.builder(String.class, fieldName.toUpperCase())
+							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+							.initializer("$S", o.getSimpleName().toString())
+							.addJavadoc("$Lの$L名\n", o.toString(), type)
+							.build();
+					fieldSpecs.add(fieldSpec);
+				});
 
 		if(isModel){
 			fieldSpecs.addAll(createModelRelatedFields(element, contains, ""));
@@ -167,15 +180,29 @@ public class GenerateNamesProcessor extends AbstractProcessor {
 	private Set<MethodSpec> createMethods(Element element, GenerateNames generateNames, HashSet<String> contains) {
 		Set<MethodSpec> methodSpecs = new HashSet<>();
 		final TypeElement typeElement = (TypeElement) element;
-		typeElement.getEnclosedElements().stream().filter(o -> o.getKind().isField()).filter(o -> !contains.contains(o.toString())).forEach( o -> {
-			MethodSpec methodSpec = MethodSpec.methodBuilder(o.toString())
-											  .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-											  .returns(String.class)
-											  .addCode("return $S;\n", o.toString())
-											  .addJavadoc("$Lのフィールド名を取得します.\n@return $Lのフィールド名\n", o.toString(), o.toString())
-											  .build();
-			methodSpecs.add(methodSpec);
-		});
+		typeElement.getEnclosedElements().stream()
+				.filter(o -> {
+					if (o.getKind().isField()) return true;
+					return generateNames.findMethods() &&
+							o instanceof ExecutableElement &&
+							((ExecutableElement) o).getParameters().isEmpty() &&
+							!CONSTRUCTOR_NAMES.contains(o.getSimpleName().toString());
+				})
+				.filter(o -> !contains.contains(o.toString()))
+				.forEach(o -> {
+					String methodName = o.getSimpleName().toString();
+					String type = "フィールド";
+					if (o instanceof ExecutableElement) {
+						type = "メソッド";
+					}
+					MethodSpec methodSpec = MethodSpec.methodBuilder(methodName)
+							.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+							.returns(String.class)
+							.addCode("return $S;\n", o.getSimpleName().toString())
+							.addJavadoc("$Lの$L名を取得します.\n@return $Lの$L名\n", o.toString(), type, o.toString(), type)
+							.build();
+					methodSpecs.add(methodSpec);
+				});
 		Element superclassElement = processingEnv.getTypeUtils().asElement(typeElement.getSuperclass());
 		if(generateNames.findSuperclass() && superclassElement != null) {
 			methodSpecs.addAll(createMethods(superclassElement, generateNames, contains));

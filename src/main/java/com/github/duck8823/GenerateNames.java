@@ -25,6 +25,11 @@ public @interface GenerateNames {
 	boolean findSuperclass() default true;
 
 	/**
+	 * メソッドを対象にするかどうか
+	 */
+	boolean findMethods() default false;
+
+	/**
 	 * メソッドで作成するか
 	 */
 	boolean createAsMethods() default false;

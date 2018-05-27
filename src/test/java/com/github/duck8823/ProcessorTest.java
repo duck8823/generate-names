@@ -62,4 +62,14 @@ public class ProcessorTest {
 				.and()
 				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeRelatedNames.java")));
 	}
+
+	@Test
+	public void メソッドのフィールドを作成する() {
+		Truth.assert_().about(JavaSourceSubjectFactory.javaSource())
+				.that(JavaFileObjects.forResource(Resources.getResource("HogeCreateMethods.java")))
+				.processedWith(new GenerateNamesProcessor())
+				.compilesWithoutError()
+				.and()
+				.generatesSources(JavaFileObjects.forResource(Resources.getResource("HogeCreateMethodsNames.java")));
+	}
 }
